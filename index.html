@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校生向け暗記・問題演習サイト</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --success: #10b981;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .upload-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .upload-subtext {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .question-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .timer {
+            background: #f1f5f9;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: var(--dark);
+            word-wrap: break-word;
+        }
+        
+        .options-container {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            word-break: break-word;
+        }
+        
+        .option:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .option-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+        
+        .option.selected .option-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .option-checkbox::after {
+            content: "✓";
+            color: white;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .option.selected .option-checkbox::after {
+            display: block;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 1.1rem;
+            color: var(--dark);
+            line-height: 1.5;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+        }
+        
+        .results-container {
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 20px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .explanation {
+            background: #f0f9ff;
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            word-break: break-word;
+        }
+        
+        .explanation-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .explanation-text {
+            line-height: 1.6;
+            color: var(--dark);
+        }
+        
+        .correct-answer {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .incorrect-answer {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .math-content {
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .markup-heading {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 15px 0 10px 0;
+        }
+        
+        .markup-heading2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 12px 0 8px 0;
+        }
+        
+        .markup-bold {
+            font-weight: 700;
+        }
+        
+        .markup-italic {
+            font-style: italic;
+        }
+        
+        .markup-underline {
+            text-decoration: underline;
+        }
+        
+        .markup-highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .markup-strikethrough {
+            text-decoration: line-through;
+        }
+        
+        .markup-code {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .markup-quote {
+            border-left: 3px solid var(--gray);
+            padding-left: 15px;
+            margin: 10px 0;
+            color: var(--gray);
+            font-style: italic;
+        }
+        
+        .explanation-card {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .question-type {
+            background: #dbeafe;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .multiple-selection-info {
+            background: #fffbeb;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .option-text {
+                font-size: 1rem;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 高校生向け暗記・問題演習</h1>
+            <p>JSONファイルをアップロードして、効率的に学習しよう！</p>
+        </div>
+        
+        <div class="card upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <h3 class="upload-text">問題ファイルをアップロード</h3>
+                <p class="upload-subtext">JSON形式の問題ファイルを選択してください</p>
+                <button class="btn" id="uploadBtn">
+                    <span>📁</span> ファイルを選択
+                </button>
+                <input type="file" id="fileInput" accept=".json" style="display: none;">
+            </div>
+        </div>
+        
+        <div class="card hidden" id="quizSection">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progressText">1/10 問</span>
+                    <span id="timer" class="timer">⏱️ 00:00</span>
+                </div>
+            </div>
+            
+            <div class="question-header">
+                <div class="question-number" id="questionNumber">問題 1</div>
+            </div>
+            
+            <div id="questionType" class="question-type">単一選択</div>
+            
+            <div id="multipleSelectionInfo" class="multiple-selection-info hidden">
+                複数の選択肢を選択できます。正しいものをすべて選んでください。
+            </div>
+            
+            <div class="question-text" id="questionText"></div>
+            
+            <div class="options-container" id="optionsContainer"></div>
+            
+            <div class="navigation">
+                <button class="btn btn-warning nav-btn" id="prevBtn">◀ 前の問題</button>
+                <button class="btn nav-btn" id="nextBtn">次の問題 ▶</button>
+            </div>
+        </div>
+        
+        <div class="card hidden" id="resultsSection">
+            <div class="results-container">
+                <h2>🎉 学習完了！</h2>
+                <div class="score-display" id="scoreDisplay">80%</div>
+                <p>お疲れ様でした！</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="correctCount">8</div>
+                        <div class="stat-label">正解数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCount">10</div>
+                        <div class="stat-label">全問題数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="timeSpent">05:30</div>
+                        <div class="stat-label">所要時間</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" id="reviewBtn">解答・解説を見る</button>
+                <button class="btn btn-warning" id="retryBtn">最初からやり直す</button>
+            </div>
+        </div>
+        
+        <div class="card hidden" id="reviewSection">
+            <h2>📝 解答・解説</h2>
+            <div id="reviewContent"></div>
+            <button class="btn" id="backToResultsBtn" style="margin-top: 20px;">結果に戻る</button>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let selectedAnswers = {};
+        let startTime = null;
+        let timerInterval = null;
+        let showExplanationAfterEach = false;
+        
+        const uploadSection = document.getElementById('uploadSection');
+        const quizSection = document.getElementById('quizSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const reviewSection = document.getElementById('reviewSection');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const questionNumber = document.getElementById('questionNumber');
+        const questionType = document.getElementById('questionType');
+        const multipleSelectionInfo = document.getElementById('multipleSelectionInfo');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const timerElement = document.getElementById('timer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const correctCount = document.getElementById('correctCount');
+        const totalCount = document.getElementById('totalCount');
+        const timeSpent = document.getElementById('timeSpent');
+        const reviewBtn = document.getElementById('reviewBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const reviewContent = document.getElementById('reviewContent');
+        const backToResultsBtn = document.getElementById('backToResultsBtn');
+        
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileUpload);
+        prevBtn.addEventListener('click', showPreviousQuestion);
+        nextBtn.addEventListener('click', showNextQuestion);
+        reviewBtn.addEventListener('click', showReview);
+        retryBtn.addEventListener('click', resetQuiz);
+        backToResultsBtn.addEventListener('click', showResults);
+        
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'application/json') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (validateQuizData(data)) {
+                            startQuiz(data);
+                        } else {
+                            alert('無効なJSON形式です。');
+                        }
+                    } catch (error) {
+                        alert('JSONファイルの読み込みに失敗しました。');
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                alert('JSONファイルを選択してください。');
+            }
+        }
+        
+        function validateQuizData(data) {
+            return data.questions && Array.isArray(data.questions) && data.questions.length > 0;
+        }
+        
+        function startQuiz(data) {
+            questions = data.questions;
+            showExplanationAfterEach = data.showExplanationAfterEach || false;
+            selectedAnswers = {};
+            currentQuestionIndex = 0;
+            startTime = new Date();
+            
+            startTimer();
+            
+            uploadSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            
+            showQuestion(currentQuestionIndex);
+        }
+        
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        function updateTimer() {
+            if (startTime) {
+                const elapsed = Math.floor((new Date() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                timerElement.textContent = `⏱️ ${minutes}:${seconds}`;
+            }
+        }
+        
+        function parseMarkup(text) {
+            if (!text) return '';
+            
+            text = text.replace(/`([^`]+)`/g, function(match, math) {
+                return '<span class="math-content">\\(' + math + '\\)</span>';
+            });
+            
+            text = text.replace(/^#\s+(.+)$/gm, '<div class="markup-heading">$1</div>');
+            text = text.replace(/^##\s+(.+)$/gm, '<div class="markup-heading2">$1</div>');
+            
+            text = text.replace(/\*\*(.+?)\*\*/g, '<span class="markup-bold">$1</span>');
+            text = text.replace(/\*(.+?)\*/g, '<span class="markup-italic">$1</span>');
+            text = text.replace(/__(.+?)__/g, '<span class="markup-underline">$1</span>');
+            text = text.replace(/==(.+?)==/g, '<span class="markup-highlight">$1</span>');
+            text = text.replace(/~~(.+?)~~/g, '<span class="markup-strikethrough">$1</span>');
+            text = text.replace(/```(.+?)```/g, '<span class="markup-code">$1</span>');
+            
+            text = text.replace(/^>\s+(.+)$/gm, '<div class="markup-quote">$1</div>');
+            
+            return text;
+        }
+        
+        function showQuestion(index) {
+            const question = questions[index];
+            questionNumber.textContent = `問題 ${index + 1}`;
+            
+            questionText.innerHTML = parseMarkup(question.question);
+            
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise([questionText]);
+            }
+            
+            const isMultiple = question.type === 'multiple';
+            questionType.textContent = isMultiple ? '複数選択' : '単一選択';
+            questionType.className = 'question-type';
+            
+            multipleSelectionInfo.classList.toggle('hidden', !isMultiple);
+            
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, i) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                
+                const selectedOptions = selectedAnswers[index] || [];
+                const isSelected = Array.isArray(selectedOptions) 
+                    ? selectedOptions.includes(i) 
+                    : selectedOptions === i;
+                
+                if (isSelected) {
+                    optionElement.classList.add('selected');
+                }
+                
+                const optionTextElement = document.createElement('div');
+                optionTextElement.className = 'option-text';
+                optionTextElement.innerHTML = parseMarkup(option);
+                
+                const checkboxElement = document.createElement('div');
+                checkboxElement.className = 'option-checkbox';
+                
+                optionElement.appendChild(checkboxElement);
+                optionElement.appendChild(optionTextElement);
+                
+                optionElement.addEventListener('click', () => {
+                    if (isMultiple) {
+                        toggleMultipleOption(index, i);
+                    } else {
+                        selectSingleOption(index, i);
+                    }
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise([optionsContainer]);
+            }
+            
+            const progress = ((index + 1) / questions.length) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `${index + 1}/${questions.length} 問`;
+            
+            prevBtn.disabled = index === 0;
+            nextBtn.textContent = index === questions.length - 1 ? '結果を見る ▶' : '次の問題 ▶';
+        }
+        
+        function selectSingleOption(questionIndex, optionIndex) {
+            selectedAnswers[questionIndex] = optionIndex;
+            
+            const options = optionsContainer.querySelectorAll('.option');
+            options.forEach((option, i) => {
+                if (i === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+        
+        function toggleMultipleOption(questionIndex, optionIndex) {
+            if (!selectedAnswers[questionIndex]) {
+                selectedAnswers[questionIndex] = [];
+            }
+            
+            const selectedOptions = selectedAnswers[questionIndex];
+            const optionIndexInArray = selectedOptions.indexOf(optionIndex);
+            
+            if (optionIndexInArray === -1) {
+                selectedOptions.push(optionIndex);
+            } else {
+                selectedOptions.splice(optionIndexInArray, 1);
+            }
+            
+            const options = optionsContainer.querySelectorAll('.option');
+            options[optionIndex].classList.toggle('selected');
+        }
+        
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+            }
+        }
+        
+        function showNextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+            } else {
+                finishQuiz();
+            }
+        }
+        
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            
+            const endTime = new Date();
+            const timeElapsed = Math.floor((endTime - startTime) / 1000);
+            const correctAnswers = calculateScore();
+            const score = Math.round((correctAnswers / questions.length) * 100);
+            
+            scoreDisplay.textContent = `${score}%`;
+            correctCount.textContent = correctAnswers;
+            totalCount.textContent = questions.length;
+            timeSpent.textContent = formatTime(timeElapsed);
+            
+            quizSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+        }
+        
+        function calculateScore() {
+            let correct = 0;
+            questions.forEach((question, index) => {
+                const userAnswer = selectedAnswers[index];
+                const correctAnswer = question.correct;
+                
+                if (question.type === 'multiple') {
+                    if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+                        const userSet = new Set(userAnswer);
+                        const correctSet = new Set(correctAnswer);
+                        if (userSet.size === correctSet.size && 
+                            [...userSet].every(val => correctSet.has(val))) {
+                            correct++;
+                        }
+                    }
+                } else {
+                    if (userAnswer === correctAnswer) {
+                        correct++;
+                    }
+                }
+            });
+            return correct;
+        }
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function showReview() {
+            resultsSection.classList.add('hidden');
+            reviewSection.classList.remove('hidden');
+            
+            let reviewHTML = '';
+            questions.forEach((question, index) => {
+                const userAnswer = selectedAnswers[index];
+                const correctAnswer = question.correct;
+                let isCorrect = false;
+                
+                if (question.type === 'multiple') {
+                    if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+                        const userSet = new Set(userAnswer);
+                        const correctSet = new Set(correctAnswer);
+                        isCorrect = userSet.size === correctSet.size && 
+                            [...userSet].every(val => correctSet.has(val));
+                    }
+                } else {
+                    isCorrect = userAnswer === correctAnswer;
+                }
+                
+                let userAnswerDisplay = '未回答';
+                if (userAnswer !== undefined) {
+                    if (question.type === 'multiple' && Array.isArray(userAnswer)) {
+                        userAnswerDisplay = userAnswer.map(i => 
+                            `${String.fromCharCode(65 + i)} ${parseMarkup(question.options[i])}`
+                        ).join('<br>');
+                    } else if (!Array.isArray(userAnswer)) {
+                        userAnswerDisplay = `${String.fromCharCode(65 + userAnswer)} ${parseMarkup(question.options[userAnswer])}`;
+                    }
+                }
+                
+                let correctAnswerDisplay = '';
+                if (question.type === 'multiple' && Array.isArray(correctAnswer)) {
+                    correctAnswerDisplay = correctAnswer.map(i => 
+                        `${String.fromCharCode(65 + i)} ${parseMarkup(question.options[i])}`
+                    ).join('<br>');
+                } else {
+                    correctAnswerDisplay = `${String.fromCharCode(65 + correctAnswer)} ${parseMarkup(question.options[correctAnswer])}`;
+                }
+                
+                const questionText = parseMarkup(question.question);
+                const explanationText = parseMarkup(question.explanation || '解説はありません。');
+                
+                reviewHTML += `
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="question-type">${question.type === 'multiple' ? '複数選択' : '単一選択'}</div>
+                        <h3 style="margin-bottom: 15px; color: var(--dark);">問題 ${index + 1}</h3>
+                        <div class="question-text" style="margin-bottom: 20px;">${questionText}</div>
+                        <div style="margin: 15px 0;">
+                            <p><strong>あなたの解答:</strong> 
+                                <span class="${isCorrect ? 'correct-answer' : 'incorrect-answer'}">
+                                    ${userAnswerDisplay}
+                                </span>
+                            </p>
+                            <p><strong>正解:</strong> 
+                                <span class="correct-answer">${correctAnswerDisplay}</span>
+                            </p>
+                        </div>
+                        <div class="explanation">
+                            <div class="explanation-title">解説</div>
+                            <div class="explanation-text">${explanationText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            reviewContent.innerHTML = reviewHTML;
+            
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise([reviewContent]);
+            }
+        }
+        
+        function showResults() {
+            reviewSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+        }
+        
+        function resetQuiz() {
+            reviewSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+            
+            questions = [];
+            selectedAnswers = {};
+            currentQuestionIndex = 0;
+            clearInterval(timerInterval);
+            timerElement.textContent = '⏱️ 00:00';
+        }
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#3b82f6';
+            uploadArea.style.backgroundColor = '#eff6ff';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#cbd5e1';
+            uploadArea.style.backgroundColor = '#f8fafc';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#cbd5e1';
+            uploadArea.style.backgroundColor = '#f8fafc';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        });
+    </script>
+</body>
+</html>
