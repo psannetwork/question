@@ -368,18 +368,27 @@
             font-family: 'Times New Roman', serif;
         }
         
-        .markup-heading {
-            font-size: 1.4rem;
+        .markup-heading1 {
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary);
-            margin: 15px 0 10px 0;
+            margin: 20px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary);
         }
         
         .markup-heading2 {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 600;
             color: var(--secondary);
-            margin: 12px 0 8px 0;
+            margin: 18px 0 12px 0;
+        }
+        
+        .markup-heading3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 15px 0 10px 0;
         }
         
         .markup-bold {
@@ -420,12 +429,13 @@
             font-style: italic;
         }
         
-        .explanation-card {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
-            border-left: 4px solid var(--secondary);
+        .markup-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .markup-list-item {
+            margin: 5px 0;
         }
         
         .question-type {
@@ -655,13 +665,21 @@
         function parseMarkup(text) {
             if (!text) return '';
             
-            text = text.replace(/`([^`]+)`/g, function(match, math) {
+            // 数学式の処理 ($ で囲まれた部分)
+            text = text.replace(/\$(.*?)\$/g, function(match, math) {
                 return '<span class="math-content">\\(' + math + '\\)</span>';
             });
             
-            text = text.replace(/^#\s+(.+)$/gm, '<div class="markup-heading">$1</div>');
+            // 見出しの処理
+            text = text.replace(/^###\s+(.+)$/gm, '<div class="markup-heading3">$1</div>');
             text = text.replace(/^##\s+(.+)$/gm, '<div class="markup-heading2">$1</div>');
+            text = text.replace(/^#\s+(.+)$/gm, '<div class="markup-heading1">$1</div>');
             
+            // リストの処理
+            text = text.replace(/^\s*-\s+(.+)$/gm, '<li class="markup-list-item">$1</li>');
+            text = text.replace(/(<li class="markup-list-item">[^<]*<\/li>)+/g, '<ul class="markup-list">$&</ul>');
+            
+            // その他のマークアップ
             text = text.replace(/\*\*(.+?)\*\*/g, '<span class="markup-bold">$1</span>');
             text = text.replace(/\*(.+?)\*/g, '<span class="markup-italic">$1</span>');
             text = text.replace(/__(.+?)__/g, '<span class="markup-underline">$1</span>');
